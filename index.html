@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mining Minecraft UI</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+
+    background:linear-gradient(
+        270deg,
+        #ff0000,
+        #ff7f00,
+        #ffff00,
+        #00ff00,
+        #00ffff,
+        #0000ff,
+        #8b00ff,
+        #ff0000
+    );
+
+    background-size:1600% 1600%;
+    animation:rgbBg 10s ease infinite;
+}
+
+@keyframes rgbBg{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+
+.box{
+    text-align:center;
+    color:white;
+    padding:40px;
+    border-radius:25px;
+    width:90%;
+    max-width:420px;
+
+    background:linear-gradient(
+        270deg,
+        #ff0000,
+        #ff7f00,
+        #ffff00,
+        #00ff00,
+        #00ffff,
+        #0000ff,
+        #8b00ff
+    );
+
+    background-size:1400% 1400%;
+    animation:rgbBox 8s ease infinite;
+
+    box-shadow:
+        0 0 20px #fff,
+        0 0 40px #00ffff,
+        0 0 60px #ff00ff;
+}
+
+@keyframes rgbBox{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+
+h1{
+    margin-bottom:10px;
+}
+
+button{
+    border:none;
+    padding:15px 35px;
+    border-radius:15px;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.3s;
+    margin-top:10px;
+}
+
+button:hover{
+    transform:scale(1.08);
+}
+
+#mineBtn{
+    background:#4caf50;
+    color:white;
+}
+
+#masukBtn{
+    display:none;
+    background:white;
+    color:black;
+}
+
+/* progress */
+.progress-bg{
+    width:100%;
+    height:18px;
+    background:rgba(255,255,255,.3);
+    border-radius:20px;
+    overflow:hidden;
+    margin-top:15px;
+}
+
+.progress-bar{
+    width:0%;
+    height:100%;
+    background:white;
+}
+
+/* click anim */
+.click-anim{
+    animation:clickAnim .25s ease;
+}
+
+@keyframes clickAnim{
+    0%{transform:scale(1);}
+    50%{transform:scale(0.85);}
+    100%{transform:scale(1);}
+}
+
+/* diamond particle */
+.diamond-pop{
+    position:fixed;
+    font-size:24px;
+    pointer-events:none;
+    animation:diamondFly 1s linear forwards;
+}
+
+@keyframes diamondFly{
+    0%{
+        opacity:1;
+        transform:translateY(0) scale(1);
+    }
+    100%{
+        opacity:0;
+        transform:translateY(-90px) scale(1.8);
+    }
+}
+
+/* loading screen */
+#loadingScreen{
+    position:fixed;
+    inset:0;
+    display:none;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    background:rgba(0,0,0,.95);
+    color:white;
+    z-index:9999;
+}
+
+.blocks{
+    display:flex;
+    gap:8px;
+    margin:20px 0;
+}
+
+.mc-block{
+    width:30px;
+    height:30px;
+    background:
+    linear-gradient(
+        to bottom,
+        #8bc34a 0%,
+        #689f38 50%,
+        #5d4037 50%,
+        #4e342e 100%
+    );
+    border:2px solid #2e7d32;
+    animation:blockMove 1s infinite;
+}
+
+.mc-block:nth-child(1){animation-delay:0s;}
+.mc-block:nth-child(2){animation-delay:.15s;}
+.mc-block:nth-child(3){animation-delay:.3s;}
+.mc-block:nth-child(4){animation-delay:.45s;}
+.mc-block:nth-child(5){animation-delay:.6s;}
+
+@keyframes blockMove{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-15px);}
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <h1>⛏️ Verivikasi bahwa anda bukan robot🤖</h1>
+
+    <h2 id="mineText">0%</h2>
+
+    <div class="progress-bg">
+        <div class="progress-bar" id="mineBar"></div>
+    </div>
+
+    <button id="mineBtn" onclick="tambang(event)">
+        ⛏️ Tambang
+    </button>
+
+    <button id="masukBtn" onclick="mulaiLoading()">
+        🎮 Masuk
+    </button>
+
+</div>
+
+<div id="loadingScreen">
+
+    <h1>⛏️ MEMUAT LINK WEBSITE</h1>
+
+    <div class="blocks">
+        <div class="mc-block"></div>
+        <div class="mc-block"></div>
+        <div class="mc-block"></div>
+        <div class="mc-block"></div>
+        <div class="mc-block"></div>
+    </div>
+
+    <h2 id="persen">0%</h2>
+
+</div>
+
+<script>
+
+let progress = 0;
+
+/* mining */
+function tambang(e){
+
+    const btn = document.getElementById("mineBtn");
+
+    btn.classList.add("click-anim");
+    setTimeout(()=>btn.classList.remove("click-anim"),250);
+
+    if(progress < 100){
+        progress += 10;
+    }
+
+    document.getElementById("mineText").innerText =
+    progress + "%";
+
+    document.getElementById("mineBar").style.width =
+    progress + "%";
+
+    /* diamond effect */
+    const diamond = document.createElement("div");
+    diamond.className = "diamond-pop";
+    diamond.innerText = "💎";
+
+    diamond.style.left = e.clientX + "px";
+    diamond.style.top = e.clientY + "px";
+
+    document.body.appendChild(diamond);
+
+    setTimeout(()=>diamond.remove(),1000);
+
+    if(progress >= 100){
+
+        document.getElementById("mineText").innerText =
+        "💎 Lanjut masuk link!";
+
+        document.getElementById("mineBtn").style.display =
+        "none";
+
+        document.getElementById("masukBtn").style.display =
+        "inline-block";
+    }
+}
+
+/* loading 8 detik */
+function mulaiLoading(){
+
+    document.getElementById("loadingScreen")
+    .style.display = "flex";
+
+    let persen = 0;
+
+    let interval = setInterval(()=>{
+
+        persen++;
+
+        document.getElementById("persen")
+        .innerText = persen + "%";
+
+        if(persen >= 100){
+
+            clearInterval(interval);
+
+            window.location.href =
+            "https://docs.google.com/forms/d/e/1FAIpQLScJw-ISuZIee52In4Wvi51uVItTT5khfrbPVI2Xit0OPuaIEw/viewform";
+        }
+
+    },80);
+}
+
+</script>
+
+</body>
+</html>
